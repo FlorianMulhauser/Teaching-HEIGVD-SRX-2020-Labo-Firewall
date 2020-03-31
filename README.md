@@ -615,7 +615,17 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+#LIVRABLE : Commandes iptables
+
+#client LAN vers le serveur WEB DMZ via SSH port 22
+iptables -A FORWARD -s 192.168.100.3 -d 192.168.200.3 -p TCP --dport 22 -j ACCEPT
+
+#client du LAN vers le firewall par ssh donc port 22
+#le firewall doit recevoir un INPUT, que depuis la machine client_LAN, il faut que ce client puisse initier et continuer une connexion par SSH, d'où les states NEW et ESTABLISHED.
+iptables -A INPUT -s 192.168.100.3 -d 192.168.100.2 -p TCP --dport 22 -m state --state NEW,ESTABLISHED -j ACCEPT
+
+#Le firewall doit juste répondre aux reequêtes SSH du client de LAN, donc ce sera dans OUT, et vu qu'il n'initie pas, mais répon, on lui donne juste le state ESTABLISHED.
+iptables -A OUTPUT -s 192.168.100.2 -d 192.168.100.3 -p TCP --sport 22 -m state --state ESTABLISHED -j ACCEPT
 ```
 
 ---
@@ -629,6 +639,8 @@ ssh root@192.168.200.3 (password : celui que vous avez configuré)
 ---
 
 **LIVRABLE : capture d'écran de votre connexion ssh.**
+> ![](screenshots/SSH_working.PNG)
+ 
 
 ---
 
