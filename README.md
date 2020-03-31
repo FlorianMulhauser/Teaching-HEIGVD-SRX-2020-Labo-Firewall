@@ -125,13 +125,17 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 
 | Adresse IP source | Adresse IP destination | Type | Port src | Port dst | Action |
 | :---:             | :---:                  | :---:| :------: | :------: | :----: |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
+| 192.168.100.0/24  | eth0(interface WAN)    | TCP  |     *    |    53    |  Accept|
+| 192.168.100.0/24  | eth0(interface WAN)    | UDP  |     *    |    53    |  Accept|
+| 192.168.100.0/24  | eth0(interface WAN)    |ICMP  |   *      |    *     |Accept  |
+| 192.168.100.0/24  | 192.168.200.0/24       |ICMP  |   *      |    *     |Accept  |
+| 192.168.200.0/24  | 192.168.100.0/24       |ICMP  |   *      |    *     |Accept  |
+| 192.168.100.0/24  | eth0(interface WAN)    |TCP   |     *    |80,8080   |  Accept|
+| 192.168.100.0/24  | eth0(interface WAN)    |TCP   |     *    |443       |  Accept|
+|       *           | 192.168.200.3/32       |TCP   |       *  |    80    |  Accept|
+| 192.168.100.3/32  | 192.168.200.3/32       |TCP   |       *  |    22    |  Accept|
+| 192.168.100.3/32  | 192.168.100.2/32       |TCP   |       *  |    22    |  Accept|
+| *                 | *                      | *    |       *  |    *     |  DROP  |
 
 ---
 
@@ -384,6 +388,13 @@ iptables-restore < iptables.conf
 Pour chaque manipulation, il est important de **garder les règles déjà créées**, les nouvelles sont ajoutées aux existantes.
 
 Pour commencer sur une base fonctionnelle, nous allons configurer le pare-feu pour accepter le **ping** dans certains cas. Cela va permettre de tester la connectivité du réseau.
+
+Le but est de configurer les règles pour que le pare-feu accepte
+-	les ping depuis le LAN sur les machines de la DMZ,
+-	les ping depuis le LAN sur le WAN,
+-	les ping depuis la DMZ vers le LAN.
+
+Ceci correspond a la **condition 2** du cahier des charges.
 
 Le but est de configurer les règles pour que le pare-feu accepte
 -	les ping depuis le LAN sur les machines de la DMZ,
