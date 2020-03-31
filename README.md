@@ -125,13 +125,17 @@ _Lors de la définition d'une zone, spécifier l'adresse du sous-réseau IP avec
 
 | Adresse IP source | Adresse IP destination | Type | Port src | Port dst | Action |
 | :---:             | :---:                  | :---:| :------: | :------: | :----: |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
-|                   |                        |      |          |          |        |
+| 192.168.100.0/24  | eth0(interface WAN)    | TCP  |     *    |    53    |  Accept|
+| 192.168.100.0/24  | eth0(interface WAN)    | UDP  |     *    |    53    |  Accept|
+| 192.168.100.0/24  | eth0(interface WAN)    |ICMP  |   *      |    *     |Accept  |
+| 192.168.100.0/24  | 192.168.200.0/24       |ICMP  |   *      |    *     |Accept  |
+| 192.168.200.0/24  | 192.168.100.0/24       |ICMP  |   *      |    *     |Accept  |
+| 192.168.100.0/24  | eth0(interface WAN)    |TCP   |     *    |80,8080   |  Accept|
+| 192.168.100.0/24  | eth0(interface WAN)    |TCP   |     *    |443       |  Accept|
+|       *           | 192.168.200.3/32       |TCP   |       *  |    80    |  Accept|
+| 192.168.100.3/32  | 192.168.200.3/32       |TCP   |       *  |    22    |  Accept|
+| 192.168.100.3/32  | 192.168.100.2/32       |TCP   |       *  |    22    |  Accept|
+| *                 | *                      | *    |       *  |    *     |  DROP  |
 
 ---
 
