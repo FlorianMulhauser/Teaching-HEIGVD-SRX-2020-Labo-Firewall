@@ -472,6 +472,8 @@ ping www.google.com
 
 ---
 
+> [!]dnsNonConfig_ping_google_fail.PNG
+
 * Créer et appliquer la règle adéquate pour que la **condition 1 du cahier des charges** soit respectée.
 
 Commandes iptables :
@@ -494,6 +496,9 @@ LIVRABLE : Commandes iptables
 **LIVRABLE : capture d'écran de votre ping.**
 
 ---
+
+> ![](screenshots/dnsConfig_ping_google_success.PNG)
+
 
 <ol type="a" start="6">
   <li>Remarques (sur le message du premier ping)?
@@ -550,6 +555,7 @@ LIVRABLE : Commandes iptables
 
 ---
 
+> ![](wget_success.PNG)
 
 ## Règles pour le protocole ssh
 

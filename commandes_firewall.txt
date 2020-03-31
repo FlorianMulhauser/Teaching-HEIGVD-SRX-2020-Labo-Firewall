@@ -18,3 +18,30 @@ iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 0 -d 192.168.100.0/2
 iptables-save > iptables.conf
 
 
+//========== DNS ===========//
+
+
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 53 -j ACCEPT
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p UDP --dport 53 -j ACCEPT
+
+
+//==========HTTP/HTTPS=========//
+
+3) LAN vers WAN par HTTP donc port 80 et 8080
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 80 -j ACCEPT
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 8080 -j ACCEPT
+
+4) LAN vers WAN par HTTPS donc port 443
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 443 -j ACCEPT
+
+5)
+LAN vers serveur web DMZ
+iptables -A FORWARD -s 192.168.100.0/24 -d 192.168.200.3 -p TCP --dport 80 -j ACCEPT
+
+interface donc WAN vers serveur web DMZ 
+iptables -A FORWARD -i eth0 -d 192.168.200.3 -p TCP --dport 80 -j ACCEPT
+
+//======== SSH ==========//
+
+6) client LAN vers le serveur WEB DMZ via SSH port 22
+iptables -A FORWARD -s 192.168.100.3 -d 192.168.200.3 -p TCP --dport 22 -j ACCEPT
