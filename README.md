@@ -418,11 +418,8 @@ iptables -P INPUT DROP
 iptables -P OUTPUT DROP
 iptables -P FORWARD DROP
 
-<<<<<<< HEAD
-#Setting as stateful
-=======
+
 #Setting as stateful (comes into play later)
->>>>>>> 46d98b463921a3b1e25d342338cb90626de701ef
 iptables -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 #Ping from LAN to WAN
