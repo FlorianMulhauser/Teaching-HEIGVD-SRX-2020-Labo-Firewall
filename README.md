@@ -235,7 +235,8 @@ ping 192.168.200.3
 ---
 
 > Depuis notre client lan, les pings ne passent effectivement pas vers la dmz, ils sont drop. (100% de packet loss)
-> [!]screenshots/ConfigDeBase_ping_Fail.PNG
+> ![](screenshots/ConfigDeBase_ping_Fail.PNG)
+
 
 En effet, la communication entre les clients dans le LAN et les serveurs dans la DMZ doit passer à travers le Firewall. Il faut donc définir le Firewall comme passerelle par défaut pour le client dans le LAN et le serveur dans la DMZ.
 
@@ -292,7 +293,8 @@ ping 192.168.100.3
 
 ---
 
-> [!]ConfigDMZ_ping_success.PNG
+> ![](screenshots/ConfigDMZ_ping_success.PNG)
+
 
 La communication est maintenant possible entre les deux machines. Pourtant, si vous essayez de communiquer depuis le client ou le serveur vers l'Internet, ça ne devrait pas encore fonctionner sans une manipulation supplémentaire au niveau du firewall. Vous pouvez le vérifier avec un ping depuis le client ou le serveur vers une adresse Internet.
 
@@ -308,7 +310,8 @@ ping 8.8.8.8
 
 ---
 
-> [!]ConfigDMZ_pingGoogle_fail.PNG
+> ![](screenshots/ConfigDMZ_pingGoogle_fail.PNG)
+
 
 ### Configuration réseau du firewall
 
@@ -408,7 +411,27 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+#Commandes iptables
+
+#Everything is dropped baseline, for INPUT, OUTPUT and FORWARD
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+
+#Setting as stateful 
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+#Ping from LAN to WAN 
+iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
+iptables -A FORWARD -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
+
+#From LAN to DMZ
+iptables -A FORWARD -s 192.168.100.0/24 -p ICMP --icmp-type 8 -d 192.168.200.0/24 -j ACCEPT
+iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
+
+#From DMZ to ZAN
+iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 8 -d 192.168.100.0/24 -j ACCEPT
+iptables -A FORWARD -s 192.168.100.0/24 -p ICMP --icmp-type 0 -d 192.168.200.0/24 -j ACCEPT
 ```
 ---
 
@@ -429,7 +452,7 @@ Faire une capture du ping.
 
 ---
 
-> [!]config_test_ping_google_success.PNG
+> ![](screenshots/config_test_ping_google_success.PNG)
 
 <ol type="a" start="3">
   <li>Testez ensuite toutes les règles, depuis le Client_in_LAN puis depuis le serveur Web (Server_in_DMZ) et remplir le tableau suivant :
@@ -439,18 +462,18 @@ Faire une capture du ping.
 
 | De Client\_in\_LAN à | OK/KO | Commentaires et explications |
 | :---                 | :---: | :---                         |
-| Interface DMZ du FW  |       |                              |
-| Interface LAN du FW  |       |                              |
-| Client LAN           |       |                              |
-| Serveur WAN          |       |                              |
+| Interface DMZ du FW  | KO    |Ne passe pas car nos politiques bloquent tout de base , et les règles rajoutées sont pour FORWARD et non INPUT (qui désigne notre cas)                              |
+| Interface LAN du FW  | KO    |Ne passe pas car nos politiques bloquent tout de base , et les règles rajoutées sont pour FORWARD et non INPUT (qui désigne notre cas)                    |
+| Client LAN           |OK     |Reste dans LAN (ne passe pas par le FW)                              |
+| Serveur WAN          |OK    |On a autorisé les pings depuis LAN vers ANY, donc c'est normal que cela fonctionne|
 
 
 | De Server\_in\_DMZ à | OK/KO | Commentaires et explications |
 | :---                 | :---: | :---                         |
-| Interface DMZ du FW  |       |                              |
-| Interface LAN du FW  |       |                              |
-| Serveur DMZ          |       |                              |
-| Serveur WAN          |       |                              |
+| Interface DMZ du FW  |KO     | Tous les INPUT sont DROP     |
+| Interface LAN du FW  |KO     | Tous les INPUT sont DROP     |
+| Serveur DMZ          |OK     | Reste dans la DMZ donc ne passe pas par le firewall |
+| Serveur WAN          |KO     | Nous n'avons pas autorisé les pings vers l'extérieur depuis la DMZ|
 
 
 ## Règles pour le protocole DNS
@@ -481,7 +504,8 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+# Commandes iptables
+
 ```
 
 ---
@@ -509,7 +533,7 @@ LIVRABLE : Commandes iptables
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
-
+> Il s'agissait d'un nom de domaine plutôt qu'une adresse IP, donc l'utilisation d'un DNS était nécessaire afin de recevoir l'adresse IP correspondante à ce domaine, et comme dans notre FireWall tout est interdit de base et nous n'avions pas ajouté de règles permettant la communication avec les DNS au moment de cette commande ping, la commande a donc échoué.
 ---
 
 
