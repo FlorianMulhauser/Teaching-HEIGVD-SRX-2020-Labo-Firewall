@@ -411,7 +411,27 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+#Commandes iptables
+
+#Everything is dropped baseline, for INPUT, OUTPUT and FORWARD
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+
+#Setting as stateful 
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+#Ping from LAN to WAN 
+iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
+iptables -A FORWARD -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
+
+#From LAN to DMZ
+iptables -A FORWARD -s 192.168.100.0/24 -p ICMP --icmp-type 8 -d 192.168.200.0/24 -j ACCEPT
+iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
+
+#From DMZ to ZAN
+iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 8 -d 192.168.100.0/24 -j ACCEPT
+iptables -A FORWARD -s 192.168.100.0/24 -p ICMP --icmp-type 0 -d 192.168.200.0/24 -j ACCEPT
 ```
 ---
 
@@ -482,7 +502,8 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+# Commandes iptables
+
 ```
 
 ---
@@ -507,7 +528,7 @@ LIVRABLE : Commandes iptables
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
-> Il s'agissait d'un nom de site plutôt qu'une adresse IP, donc l'utilisation d'un DNS était nécessaire afin de recevoir l'adresse IP correspondante à ce site, et comme dans notre FireWall tout est interdit de base et nous n'avions pas ajouté de règles permettant la communication avec les DNS au moment de cette commande ping.
+> Il s'agissait d'un nom de domaine plutôt qu'une adresse IP, donc l'utilisation d'un DNS était nécessaire afin de recevoir l'adresse IP correspondante à ce domaine, et comme dans notre FireWall tout est interdit de base et nous n'avions pas ajouté de règles permettant la communication avec les DNS au moment de cette commande ping, la commande a donc échoué.
 ---
 
 
