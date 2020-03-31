@@ -418,10 +418,10 @@ iptables -P INPUT DROP
 iptables -P OUTPUT DROP
 iptables -P FORWARD DROP
 
-#Setting as stateful 
+#Setting as stateful
 iptables -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
-#Ping from LAN to WAN 
+#Ping from LAN to WAN
 iptables -A FORWARD -s 192.168.200.0/24 -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
 iptables -A FORWARD -p ICMP --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
 
@@ -649,3 +649,5 @@ A présent, vous devriez avoir le matériel nécessaire afin de reproduire la ta
 **LIVRABLE : capture d'écran avec toutes vos règles.**
 
 ---
+
+> ![](screenshots/IPtables_final.PNG)
