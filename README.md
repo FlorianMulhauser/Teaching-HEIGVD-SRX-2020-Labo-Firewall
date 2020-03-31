@@ -418,7 +418,11 @@ iptables -P INPUT DROP
 iptables -P OUTPUT DROP
 iptables -P FORWARD DROP
 
+<<<<<<< HEAD
 #Setting as stateful
+=======
+#Setting as stateful (comes into play later)
+>>>>>>> 46d98b463921a3b1e25d342338cb90626de701ef
 iptables -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 #Ping from LAN to WAN
@@ -495,7 +499,7 @@ ping www.google.com
 
 ---
 
-> [!]dnsNonConfig_ping_google_fail.PNG
+> ![](screenshots/dnsNonConfig_ping_google_fail.PNG)
 
 * Créer et appliquer la règle adéquate pour que la **condition 1 du cahier des charges** soit respectée.
 
@@ -505,6 +509,10 @@ Commandes iptables :
 
 ```bash
 # Commandes iptables
+
+#Since we already specified stateful for FORWARD, we only need one for udp and one for TCP
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 53 -j ACCEPT
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p UDP --dport 53 -j ACCEPT
 
 ```
 
@@ -552,7 +560,14 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+#LIVRABLE : Commandes iptables
+
+# LAN vers WAN par HTTP donc port 80 et 8080
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 80 -j ACCEPT
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 8080 -j ACCEPT
+
+# LAN vers WAN par HTTPS donc port 443
+iptables -A FORWARD -s 192.168.100.0/24 -o eth0 -p TCP --dport 443 -j ACCEPT
 ```
 
 ---
@@ -564,7 +579,14 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+#LIVRABLE : Commandes iptables
+
+#LAN vers serveur web DMZ
+iptables -A FORWARD -s 192.168.100.0/24 -d 192.168.200.3 -p TCP --dport 80 -j ACCEPT
+
+#interface donc WAN vers serveur web DMZ 
+iptables -A FORWARD -i eth0 -d 192.168.200.3 -p TCP --dport 80 -j ACCEPT
+
 ```
 ---
 
@@ -579,7 +601,7 @@ LIVRABLE : Commandes iptables
 
 ---
 
-> ![](wget_success.PNG)
+> ![](screenshots/wget_success.PNG)
 
 ## Règles pour le protocole ssh
 
@@ -619,6 +641,7 @@ ssh root@192.168.200.3 (password : celui que vous avez configuré)
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
+> Le ssh nous permet un accès à distance sécurisé sur le serveur, nous pouvons donc avoir accès à un shell à distance (pour le configurer / maintenir par exemple).
 
 ---
 
@@ -632,6 +655,8 @@ ssh root@192.168.200.3 (password : celui que vous avez configuré)
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
+
+> Ce type d'accès nous donne énormement de permissions sur le serveur, il faut donc faire attention à bien limiter les adresses IP qui peuvent se connecter de la sorte et de ne choisir que des adresses de confiance (que ce soit pour l'accès au serveur ou au firewall).
 
 ---
 
